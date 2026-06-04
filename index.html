@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Parfum Pricing Calculator - Custom Volume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0a0a0c] text-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-[#16161a] border border-gray-800 rounded-3xl p-8 shadow-2xl">
+        <h1 class="text-2xl font-bold mb-2 text-blue-500">🧪 AI Pricing Calculator</h1>
+        <p class="text-gray-500 text-sm mb-6 border-b border-gray-800 pb-4">Sesuaikan volume bulk dan target margin</p>
+        
+        <div class="space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Input Volume Bulk -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Isi Botol Bulk (ml)</label>
+                    <input type="number" id="volumeBulk" placeholder="Contoh: 100" value="100"
+                        class="w-full bg-[#0a0a0c] border border-gray-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <!-- Input Harga Beli -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Harga Beli Total</label>
+                    <input type="number" id="hargaBeli" placeholder="Contoh: 1500000" 
+                        class="w-full bg-[#0a0a0c] border border-gray-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <!-- Input Biaya Botol Decant -->
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Biaya Botol Kosong + Sticker (per pcs)</label>
+                <input type="number" id="biayaBotol" value="3000" 
+                    class="w-full bg-[#0a0a0c] border border-gray-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <!-- Input Margin -->
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Target Margin Keuntungan (%)</label>
+                <input type="number" id="margin" value="50" 
+                    class="w-full bg-[#0a0a0c] border border-gray-700 rounded-xl py-3 px-4 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <button onclick="hitungHarga()" 
+                class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-blue-900/20 text-white">
+                Analisis & Hitung Harga Jual
+            </button>
+
+            <!-- Hasil Perhitungan -->
+            <div id="hasil" class="hidden mt-8 space-y-4">
+                <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">Modal Cairan per ml</p>
+                    <p id="modalPerMl" class="text-xl font-mono font-bold text-white">Rp 0</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-2xl">
+                        <p class="text-xs text-gray-400 font-bold uppercase mb-1">Harga Jual 10ml</p>
+                        <p id="jual10ml" class="text-lg font-bold text-emerald-400">Rp 0</p>
+                        <p class="text-[10px] text-gray-500 mt-1">*Sudah termasuk biaya botol & margin</p>
+                    </div>
+                    <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-2xl">
+                        <p class="text-xs text-gray-400 font-bold uppercase mb-1">Harga Jual 5ml</p>
+                        <p id="jual5ml" class="text-lg font-bold text-emerald-400">Rp 0</p>
+                        <p class="text-[10px] text-gray-500 mt-1">*Sudah termasuk biaya botol & margin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hitungHarga() {
+            const volBulk = parseFloat(document.getElementById('volumeBulk').value);
+            const hargaBeli = parseFloat(document.getElementById('hargaBeli').value);
+            const biayaBotol = parseFloat(document.getElementById('biayaBotol').value);
+            const margin = parseFloat(document.getElementById('margin').value);
+            
+            if(!hargaBeli || !volBulk) return alert("Lengkapi data volume dan harga beli!");
+
+            // 1. Hitung modal cairan per ml
+            const modalCairanPerMl = hargaBeli / volBulk;
+            
+            // 2. Hitung harga jual dengan margin (Harga = (Modal Cairan + Modal Botol) * (1 + Margin%))
+            const multiplier = 1 + (margin / 100);
+            
+            const totalModal10ml = (modalCairanPerMl * 10) + biayaBotol;
+            const totalModal5ml = (modalCairanPerMl * 5) + biayaBotol;
+
+            const hargaJual10ml = totalModal10ml * multiplier;
+            const hargaJual5ml = totalModal5ml * multiplier;
+
+            // Update Tampilan
+            document.getElementById('modalPerMl').innerText = "Rp " + Math.round(modalCairanPerMl).toLocaleString();
+            document.getElementById('jual10ml').innerText = "Rp " + Math.round(hargaJual10ml).toLocaleString();
+            document.getElementById('jual5ml').innerText = "Rp " + Math.round(hargaJual5ml).toLocaleString();
+            
+            document.getElementById('hasil').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
